@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produkt</th>
+                <!--<th>Ilość</th>-->
+                <th>Data ważności</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product_part in order_list.get_products %}
+        <tr>
+            <td>
+                {{product_part.product_name}}
+            </td>
+            <td>
+                {{product_part.expire_date}}
+            </td>
+            {% endfor %}
+        </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

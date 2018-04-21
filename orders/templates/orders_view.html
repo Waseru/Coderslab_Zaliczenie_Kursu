@@ -5,16 +5,15 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Product:</th>
+                <th>Data Zamówienia:</th>
             </tr>
         </thead>
         <tbody>
-        {% for product in products %}
+        {% for order in order_list %}
         <tr>
             <td>
-                {{product.name}}
+                <a href="{% url 'detail-view' id=order.id%}">{{order.order_date}}</a>
             </td>
-
         </tr>
         {% endfor %}
         </tbody>

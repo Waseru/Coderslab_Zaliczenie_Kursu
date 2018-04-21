@@ -16,11 +16,17 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from orders.views import ProductView, LoginView, AddUserView
+from orders.views import ProductView, LoginView, AddUserView, OrdersView, LogoutView, CreateOrderView, OrderDetailView, \
+    CreateOrderView2
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^products/$', ProductView.as_view()),
-    url(r'^login/$', LoginView.as_view()),
-    url(r'^create_user/$', AddUserView.as_view()),
+    url(r'^products/$', ProductView.as_view(), name='products'),
+    url(r'^login/$', LoginView.as_view(), name='login'),
+    url(r'^logout/$', LogoutView.as_view(), name='logout'),
+    url(r'^create_user/$', AddUserView.as_view(), name='create_user'),
+    url(r'^orders_view/$', OrdersView.as_view(), name='orders-view'),
+    url(r'^order_detail_view/(?P<id>\d+)/$', OrderDetailView.as_view(), name='detail-view'),
+    url(r'^create_order/$', CreateOrderView.as_view()),
+    url(r'^create_order2/$', CreateOrderView2.as_view()),
 ]

@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'FINAL_PROJECT.wsgi.application'
 DATABASES = {
     'default': {
         'HOST': '127.0.0.1',
-        'NAME': 'order_expiry_db',
+        'NAME': 'orders_db',
         'ENGINE': 'django.db.backends.mysql',
         'USER': 'root',
         'PASSWORD': 'coderslab',

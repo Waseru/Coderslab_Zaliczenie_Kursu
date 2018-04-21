@@ -1,7 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.forms import formset_factory, MultipleChoiceField
 
-from orders.validators import validate_username
+from orders.models import Order, Product, OrderData
+from orders.validators import validate_username, validate_min_value
 
 
 class LoginForm(forms.Form):
@@ -20,3 +22,25 @@ class AddUserForm(forms.Form):
         password2 = cleaned_data['confirm_password']
         if password != password2:
             raise ValidationError('Hasła nie są takie same')
+
+class OrderProductForm(forms.Form):
+    product = forms.ModelChoiceField(queryset=Product.objects.all())
+    quantity = forms.IntegerField(validators=[validate_min_value]) #walidator coś nie działa hehe
+
+
+# class OrderDataForm(forms.ModelForm):
+#     class Meta:
+#         model = OrderData
+#         fields = ['product']
+#
+#         widgets = {
+#             'products': MultipleChoiceField,
+#         }
+#
+# class BiggerOrderDataForm(forms.ModelForm):
+#     value = forms.IntegerField()
+#
+#     class Meta(OrderDataForm.Meta):
+#         fields = OrderDataForm.Meta.fields + ('value')
+#
+# # ProductFormset = formset_factory(ProductForm)
