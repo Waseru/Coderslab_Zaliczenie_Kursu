@@ -12,8 +12,8 @@
   <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="{% url 'products' %}">Strona Startowa</a>
-  <a class="navbar-brand" href="{% url 'create-order' %}">Złóż Zamówienie</a>
       {% if user.is_authenticated %}
+  <a class="navbar-brand" href="{% url 'create-order' %}">Złóż Zamówienie</a>
   <a class="navbar-brand" href="{% url 'orders-view' %}">Twoje Zamówienia</a>
   <a class="navbar-brand" href="{% url 'close-expire' %}">Będzie zaraz śmierdzieć!</a>
       {% endif %}

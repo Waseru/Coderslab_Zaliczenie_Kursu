@@ -35,7 +35,7 @@ class Order(models.Model):
 
 
     def __str__(self):
-        return 'Order nr {}'.format(self.id)
+        return 'Order nr {} {}'.format(self.id, self.user)
 
 class OrderData(models.Model):
     product = models.ForeignKey(Product)
