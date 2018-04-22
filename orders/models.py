@@ -30,7 +30,7 @@ class Order(models.Model):
     def get_products(self):
         for order_object in OrderData.objects.filter(order=self):
             yield order_object.product_part
-            yield order_object.order_quantity
+
 
 
 
@@ -42,5 +42,3 @@ class OrderData(models.Model):
     product_part = models.ForeignKey(ProductPart)
     order = models.ForeignKey(Order)
     order_quantity = models.IntegerField()
-
-#django wie który user jest zalogowany i przenosi go w requestie tworząc model

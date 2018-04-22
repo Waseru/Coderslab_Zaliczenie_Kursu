@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h3>Poniższym produktom kończy się data ważności w ciągu najbliższych 7 dni!</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produkt:</th>
+                <th>Data ważności:</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for list in lists %}
+        <tr>
+            <td>
+                {{list.product_name}}
+            </td>
+            <td>
+                {{list.expire_date}}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

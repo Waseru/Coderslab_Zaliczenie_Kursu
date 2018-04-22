@@ -21,5 +21,4 @@ class OrderAdmin(admin.ModelAdmin):
         OrderInLine,
     ]
     exclude = ('product',)
-    # list_display = ['user', 'product', 'order_data']
 

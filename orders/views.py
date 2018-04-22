@@ -1,6 +1,7 @@
+from datetime import timedelta, datetime
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -10,15 +11,11 @@ from orders.forms import LoginForm, AddUserForm, OrderProductForm
 from orders.models import Product, ProductPart, Order, OrderData
 
 
-# Create your views here.
-
 class ProductView(View):
     def get(self, request):
         products = Product.objects.all()
-        productpart = ProductPart.objects.all()
         ctx = {
             "products": products,
-            "productpart": productpart
         }
         return render(request, 'products.html', ctx)
 
@@ -39,22 +36,19 @@ class LoginView(View):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                # ----------------------- dzien 3 uprawnienia --------
                 url = request.GET.get('next')
                 if url:
                     return redirect(url)
-                # sprawia, że jesli np. nie jestem zalogowany, a chce zmienic hasło, to mnie przekierowuje do strony z logowaniem
-                # do formularza z logowaniem
-                # ------------------------------------------------------
-                order_list = Order.objects.filter(user=request.user)
+
+                products = Product.objects.all()
 
                 ctx = {
-                    "order_list": order_list,
+                    "products": products,
                 }
-                return render(request, 'orders_view.html', ctx)
-            # else:
-            #     return HttpResponse('Zły login lub hasło')
-            form.add_error(field=None, error='Zły login lub hasło') #zamiennie moze byc
+                return render(request, 'products.html', ctx)
+            else:
+                return HttpResponse('Zły login lub hasło')
+
         ctx = {
             'form': form,
         }
@@ -64,7 +58,11 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request):
         logout(request)
-        return render(request, 'products.html')
+        products = Product.objects.all()
+        ctx = {
+            "products": products,
+        }
+        return render(request, 'products.html', ctx)
 
 class AddUserView(View):
     def get(self, request):
@@ -88,14 +86,14 @@ class AddUserView(View):
 
 class CreateOrderView(View):
     def get(self, request):
-        form = formset_factory(OrderProductForm, extra=2)()
+        form = formset_factory(OrderProductForm, extra=4)()
         ctx = {
             'form': form,
         }
         return render(request, 'order_form.html', ctx)
 
     def post(self, request):
-        form = formset_factory(OrderProductForm, extra=2)(request.POST)
+        form = formset_factory(OrderProductForm, extra=4)(request.POST)
         if form.is_valid():
             object = Order.objects.create(user=request.user)
             # products = form.cleaned_data['product']
@@ -104,7 +102,7 @@ class CreateOrderView(View):
                 name = product.get('product')
                 stocks = ProductPart.objects.filter(product_name=name).exclude(quantity=0).order_by('-expire_date')
                 if not stocks:
-                    #usunąć stworzony obiekt
+                    object.delete()
                     return HttpResponse('Przepraszamy! Produkt {} jest niedostępny'.format(name))
                 else:
                     for stock in stocks:
@@ -113,29 +111,15 @@ class CreateOrderView(View):
                             stock.save()
                             order = OrderData(product=name, product_part=stock, order=object, order_quantity=quantity)
                             order.save()
-            return render(request, 'order_form.html', )
+            ctx = {
+                'form': form,
+            }
+            return render(request, 'order_form.html', ctx)
 
-
-
-                #do sprawdzenia czy quantity jest odpowiednie trzeba chyba petle for zrobić z ifem w środku do zapisu danych
-            #     order = OrderData(product=name, product_part=stock, order=object, order_quantity=quantity)
-            #     order.save()
-            #     # stock.quantity -= quantity
-            #     # stock.save()
-            #     # return HttpResponse(stock.quantity)
-            # return HttpResponse(order)
-
-class CreateOrderView2(View):
-    def get(self, request):
-        form = BiggerOrderDataForm
-        ctx = {
-            'form': form,
-        }
-        return render(request, 'create_order_form.html', ctx)
 
 class OrdersView(View):
     def get(self, request):
-        order_list = Order.objects.filter(user=request.user)
+        order_list = Order.objects.filter(user=request.user).order_by('-order_date')
 
         ctx = {
             "order_list": order_list,
@@ -149,4 +133,36 @@ class OrderDetailView(View):
             "order_list": order_list,
         }
         return render(request, 'order_detail_view.html', ctx)
+
+class UserExpireProductView(View):
+    def get(self, request):
+        orders_list = Order.objects.filter(user=request.user) #zamówienia danego użytkownika
+        close_expire_date = datetime.now().date() + timedelta(days=7)
+
+        # product_part = ProductPart.objects.filter(expire_date__lt=close_expire_date)
+        # forms = product_part
+        # ctx = {
+        #     'forms': forms,
+        # }
+        #
+        # return render(request, 'close_expire_list_form.html', ctx)
+
+        list = []
+        for order in orders_list:
+            product_parts = OrderData.objects.filter(order=order) #dane obiektów do zamówień użytkownika
+            for product_part in product_parts:
+                if product_part.product_part.expire_date <= close_expire_date:
+                    list.append(product_part.product_part)
+
+                    ctx = {
+                        'lists': list
+                    }
+        return render(request, 'close_expire_list_form.html', ctx)
+
+
+                # return HttpResponse(product_part.product_part)
+        # orders_list = Order.objects.filter(user=request.user, order_date__lt=close_expire_date)
+
+# sprawdź wszystkie product party czy spełniają wymóg, a potem przefiltruj czy znajdują się w zamówieniu?
+
 

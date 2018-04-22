@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from orders.views import ProductView, LoginView, AddUserView, OrdersView, LogoutView, CreateOrderView, OrderDetailView, \
-    CreateOrderView2
+    UserExpireProductView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -27,6 +27,6 @@ urlpatterns = [
     url(r'^create_user/$', AddUserView.as_view(), name='create_user'),
     url(r'^orders_view/$', OrdersView.as_view(), name='orders-view'),
     url(r'^order_detail_view/(?P<id>\d+)/$', OrderDetailView.as_view(), name='detail-view'),
-    url(r'^create_order/$', CreateOrderView.as_view()),
-    url(r'^create_order2/$', CreateOrderView2.as_view()),
+    url(r'^create_order/$', CreateOrderView.as_view(), name='create-order'),
+    url(r'^close_expire/$', UserExpireProductView.as_view(), name='close-expire'),
 ]
