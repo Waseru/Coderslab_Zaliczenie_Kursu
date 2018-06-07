@@ -26,21 +26,3 @@ class AddUserForm(forms.Form):
 class OrderProductForm(forms.Form):
     product = forms.ModelChoiceField(queryset=Product.objects.all())
     quantity = forms.IntegerField(validators=[validate_min_value]) #walidator coś nie działa hehe
-
-
-# class OrderDataForm(forms.ModelForm):
-#     class Meta:
-#         model = OrderData
-#         fields = ['product']
-#
-#         widgets = {
-#             'products': MultipleChoiceField,
-#         }
-#
-# class BiggerOrderDataForm(forms.ModelForm):
-#     value = forms.IntegerField()
-#
-#     class Meta(OrderDataForm.Meta):
-#         fields = OrderDataForm.Meta.fields + ('value')
-#
-# # ProductFormset = formset_factory(ProductForm)

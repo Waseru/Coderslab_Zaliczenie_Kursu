@@ -106,6 +106,11 @@ class CreateOrderView(View):
         form = formset_factory(OrderProductForm, extra=3)(request.POST)
         if form.is_valid():
             object = Order.objects.create(user=request.user)
+            repetition = []
+            for product in form.cleaned_data:
+                repetition.append(product.get('product'))
+                if repetition.count(product.get('product')) >= 2:
+                    return HttpResponse('Podałeś  conajmniej dwa razy ten sam produkt! {}'.format(product.get('product')))
 
             for product in form.cleaned_data:
                 quantity = product.get('quantity')
@@ -149,18 +154,22 @@ class UserExpireProductView(View):
     def get(self, request):
         orders_list = Order.objects.filter(user=request.user) #zamówienia danego użytkownika
         if not orders_list:
-            return render(request, 'close_expire_list_empty.html')
+            return render(request, 'close_expire_list_no_orders.html')
         else:
             close_expire_date = datetime.now().date() + timedelta(days=7)
+            date_now = datetime.now().date()
 
             list = []
             for order in orders_list:
                 product_parts = OrderData.objects.filter(order=order) #dane obiektów do zamówień użytkownika
                 for product_part in product_parts:
-                    if product_part.product_part.expire_date <= close_expire_date:
+                    if date_now <= product_part.product_part.expire_date <= close_expire_date:
                         list.append(product_part.product_part)
 
                         ctx = {
                             'lists': list
                         }
-            return render(request, 'close_expire_list_form.html', ctx)
+            if not list:
+                return render(request, 'close_expire_list_empty.html')
+            else:
+                return render(request, 'close_expire_list_form.html', ctx)
