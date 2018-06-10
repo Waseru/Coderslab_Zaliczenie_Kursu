@@ -10,5 +10,3 @@ Things to do in future:
 * add payment system
 * add sms notifications
 * add contact view with option to send an e-mail by users.
-
-
