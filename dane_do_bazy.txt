@@ -1,8 +1,0 @@
-from orders.models import Product
-prod1 = Product.objects.create(name='Mleko Łaciate UHT 2% 1l', description='dobre polskie mleko')
-prod1.save()
-prod2 = Product.objects.create(name='Jogurt Typu Greckiego 200g', description='niby grecki, a robiony w polsce')
-prod2.save()
-
->>> from orders.models import ProductPart
->>> part1 = Product.objects.create(part_number='201804070001', product_name=pro1, quantity=200, expire_date='2018
